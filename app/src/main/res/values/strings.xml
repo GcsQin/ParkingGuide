@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ParkingGuide</string>
+    <string name="open_draw">Open</string>
+    <string name="close_draw">Close</string>
 </resources>
