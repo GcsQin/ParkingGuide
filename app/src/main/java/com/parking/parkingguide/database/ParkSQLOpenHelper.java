@@ -9,10 +9,17 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class ParkSQLOpenHelper extends SQLiteOpenHelper {
+    private static ParkSQLOpenHelper parkSQLOpenHelper=null;
+
     public ParkSQLOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
-
+    public static ParkSQLOpenHelper getInstance(Context context){
+            if(parkSQLOpenHelper==null){
+                parkSQLOpenHelper=new ParkSQLOpenHelper(context,"park.db",null,1);
+            }
+        return parkSQLOpenHelper;
+    }
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table parkInfo(_id integer primary key autoincrement," +

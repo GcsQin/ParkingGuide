@@ -14,6 +14,31 @@ public class ParkInfo {
     public String parkNum;
     public String parkLevel;
 
+    public ParkInfo(String area, String recordId, String id, String parkName, String parkType, String parkCompany, String parkNum, String parkLevel) {
+        this.area = area;
+        this.recordId = recordId;
+        this.id = id;
+        this.parkName = parkName;
+        this.parkType = parkType;
+        this.parkCompany = parkCompany;
+        this.parkNum = parkNum;
+        this.parkLevel = parkLevel;
+    }
+
+    @Override
+    public String toString() {
+        return "ParkInfo{" +
+                "area='" + area + '\'' +
+                ", recordId='" + recordId + '\'' +
+                ", id='" + id + '\'' +
+                ", parkName='" + parkName + '\'' +
+                ", parkType='" + parkType + '\'' +
+                ", parkCompany='" + parkCompany + '\'' +
+                ", parkNum='" + parkNum + '\'' +
+                ", parkLevel='" + parkLevel + '\'' +
+                '}';
+    }
+
     public String getArea() {
         return area;
     }
