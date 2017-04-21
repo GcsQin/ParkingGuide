@@ -4,4 +4,20 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#ffffff</color>
+    <!--recyclerviewColorset-->
+    <!--<color name="BLACK">0xFF000000</color>-->
+    <!--<color name="GRAY">0xFF888888</color>-->
+    <!--<color name="DKGRAY">0xFF444444</color>-->
+    <!--<color name="LTGRAY">0xFFCCCCCC</color>-->
+    <!--<color name="WHITE">0xFFFFFFFF</color>-->
+    <!--<color name="RED">0xFFFF0000</color>-->
+    <!--<color name="GREEN">0xFF00FF00</color>-->
+    <!--<color name="BLUE">0xFF0000FF</color>-->
+    <!--<color name="YELLOW">0xFFFFFF00</color>-->
+    <!--<color name="CYAN">0xFF00FFFF</color>-->
+    <!--<color name="MAGENTA">0xFFFF00FF</color>-->
+    <color name="default_material_dark">#b3ffffff</color>
+    <color name="material_light">#8a000000</color>
+    <color name="material_dark">#36ffffff</color>
+    <color name="disabled_material_light">#24000000</color>
 </resources>

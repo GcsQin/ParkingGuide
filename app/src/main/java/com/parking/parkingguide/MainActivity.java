@@ -1,13 +1,28 @@
 package com.parking.parkingguide;
 
+import android.app.Application;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parking.parkingguide.bean.ParkInfo;
 import com.parking.parkingguide.database.ParkDatabase;
@@ -20,11 +35,18 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
-    ActionBarDrawerToggle mToggle;
+    private ActionBarDrawerToggle mToggle;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private MyRecyclerViewAdapter myRecyclerViewAdapter;
+    private static Context mContext;
+    private static int[] colors=new int[]{R.color.default_material_dark,R.color.material_dark
+    ,R.color.disabled_material_light,R.color.material_light};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+        mContext=MainActivity.this;
         initView();
         initToolBarAnadDrawableLayout();
         //启动ExcelAsynTask，execute的参数会传递到doInBackground的形参中
@@ -34,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView(){
         drawerLayout= (DrawerLayout) findViewById(R.id.dlMain);
         toolbar=(Toolbar)findViewById(R.id.toolBar);
+        recyclerView=(RecyclerView)findViewById(R.id.recycleView_main);
     }
     private void initToolBarAnadDrawableLayout(){
         setSupportActionBar(toolbar);
@@ -54,6 +77,74 @@ public class MainActivity extends AppCompatActivity {
         };
         drawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+    }
+    private void initRecyclerView(ArrayList<ParkInfo> parkInfos){
+        linearLayoutManager=new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        //不改变recycleView的尺寸
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
+        myRecyclerViewAdapter=new MyRecyclerViewAdapter(parkInfos);
+        recyclerView.setAdapter(myRecyclerViewAdapter);
+        //
+    }
+    static class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MYViewHolder>{
+        private ArrayList<ParkInfo> parkInfos;
+        private RecyclerViewOnitemClickListener recyclerViewOnitemClickListener;
+        public MyRecyclerViewAdapter(ArrayList<ParkInfo> Infos) {
+            this.parkInfos = Infos;
+        }
+        public interface RecyclerViewOnitemClickListener{
+            void onItemClick(View vie,int position);
+        }
+        @Override
+        public MYViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main_recyclerview,parent,false);
+            return new MYViewHolder(view);
+        }
+        @Override
+        public void onBindViewHolder(MYViewHolder holder, int position) {
+            position=position+1;
+            ParkInfo parkInfo=parkInfos.get(position);
+            holder.linearRoot.setBackgroundColor(ContextCompat.getColor(mContext,colors[position%4]));
+            holder.area.setText(parkInfo.getArea());
+            holder.recordId.setText(parkInfo.getRecordId());
+            holder.id.setText(parkInfo.getId());
+            holder.parkName.setText(parkInfo.getParkName());
+            holder.parkType.setText(parkInfo.getParkType());
+            holder.parkCompany.setText(parkInfo.getParkCompany());
+            holder.parkNum.setText(parkInfo.getParkNum());
+            holder.parkLevel.setText(parkInfo.getParkLevel());
+        }
+
+        @Override
+        public int getItemCount() {
+            return parkInfos.size();
+        }
+        class MYViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+            LinearLayout linearRoot;
+            TextView area,recordId,id,parkName,parkType,parkCompany,parkNum,parkLevel;
+            public MYViewHolder(View itemView) {
+                super(itemView);
+                linearRoot=(LinearLayout)itemView.findViewById(R.id.ll_item_recyclerview);
+                area= (TextView) itemView.findViewById(R.id.tv_area);
+                recordId= (TextView) itemView.findViewById(R.id.tv_recordId);
+                id= (TextView) itemView.findViewById(R.id.tv_id);
+                parkName= (TextView) itemView.findViewById(R.id.tv_parkname);
+                parkType= (TextView) itemView.findViewById(R.id.tv_parktype);
+                parkCompany= (TextView) itemView.findViewById(R.id.tv_parkcompany);
+                parkNum= (TextView) itemView.findViewById(R.id.tv_parknum);
+                parkLevel= (TextView) itemView.findViewById(R.id.tv_level);
+                itemView.setOnClickListener(this);
+            }
+            @Override
+            public void onClick(View view) {
+                if(recyclerViewOnitemClickListener!=null){
+                    recyclerViewOnitemClickListener.onItemClick(view,getPosition());
+                }
+            }
+        }
     }
     /*
     * 第一个泛型定义的是doInBackground的形参参数泛型
@@ -79,10 +170,11 @@ public class MainActivity extends AppCompatActivity {
         //运行于主线程，耗时操作结束后执行该方法
         @Override
         protected void onPostExecute(ArrayList<ParkInfo> list) {
-            for (int i=0;i<100;i++){
-                ParkInfo parkInfo=list.get(i);
-                Log.e("MainActivity",parkInfo.toString());
-            }
+            initRecyclerView(list);
+//            for (int i=0;i<100;i++){
+//                ParkInfo parkInfo=list.get(i);
+//                Log.e("MainActivity",parkInfo.toString());
+//            }
             super.onPostExecute(list);
         }
     }
