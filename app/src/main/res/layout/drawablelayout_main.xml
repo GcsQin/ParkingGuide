@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dlMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -11,13 +12,30 @@
         android:background="@color/colorWhite"
         android:gravity="center"
         android:orientation="vertical">
-        <android.support.v7.widget.RecyclerView
-            android:layout_marginTop="16dp"
-            android:id="@+id/recycleView_main"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </android.support.v7.widget.RecyclerView>
-
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginTop="16dp"
+                android:id="@+id/recycleView_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="50dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/fly_button"
+                android:id="@+id/float_btn"
+                app:fabSize="normal"
+                android:onClick="floatLocation"
+                app:backgroundTint="@color/colorPrimary"
+                app:rippleColor="#7ea19f"
+                />
+        </RelativeLayout>
     </LinearLayout>
 
     <!--android:layout_gravity="start"属性使这部分作为侧滑部分-->
@@ -40,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="左侧菜单"
+            android:id="@+id/test"
             />
     </LinearLayout>
 

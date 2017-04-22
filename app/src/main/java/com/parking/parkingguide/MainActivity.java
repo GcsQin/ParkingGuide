@@ -2,9 +2,11 @@ package com.parking.parkingguide;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,6 +26,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.parking.parkingguide.bean.ParkInfo;
 import com.parking.parkingguide.database.ParkDatabase;
 import com.parking.parkingguide.utils.ExcelUtils;
@@ -39,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private MyRecyclerViewAdapter myRecyclerViewAdapter;
+    private FloatingActionButton mFloatButton;
     private static Context mContext;
+
     private static int[] colors=new int[]{R.color.default_material_dark,R.color.material_dark
     ,R.color.disabled_material_light,R.color.material_light};
     @Override
@@ -57,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout= (DrawerLayout) findViewById(R.id.dlMain);
         toolbar=(Toolbar)findViewById(R.id.toolBar);
         recyclerView=(RecyclerView)findViewById(R.id.recycleView_main);
+        mFloatButton=(FloatingActionButton)findViewById(R.id.float_btn);
     }
     private void initToolBarAnadDrawableLayout(){
         setSupportActionBar(toolbar);
@@ -89,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(myRecyclerViewAdapter);
         //
     }
+    public void floatLocation(View view){
+        startActivity(new Intent(MainActivity.this,LocationActivity.class));
+    }
+
     static class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MYViewHolder>{
         private ArrayList<ParkInfo> parkInfos;
         private RecyclerViewOnitemClickListener recyclerViewOnitemClickListener;
