@@ -3,24 +3,29 @@ package com.parking.parkingguide;
 import android.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.PopupWindow;
 
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-//import com.amap.api.maps.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.UiSettings;
-import com.amap.api.maps2d.model.BitmapDescriptor;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.maps2d.model.Marker;
-import com.amap.api.maps2d.model.MarkerOptions;
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.overlay.PoiOverlay;
+
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.AMap;
+
 import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
@@ -34,7 +39,7 @@ import com.amap.api.services.poisearch.PoiSearch;
 import java.util.ArrayList;
 
 public class LocationActivity extends AppCompatActivity implements LocationSource,AMapLocationListener,
-         AMap.OnMapLongClickListener,GeocodeSearch.OnGeocodeSearchListener ,PoiSearch.OnPoiSearchListener{
+         AMap.OnMapLongClickListener,GeocodeSearch.OnGeocodeSearchListener ,PoiSearch.OnPoiSearchListener,AMap.OnMarkerClickListener{
     //定位服务类
     private AMapLocationClient locationClient = null;
     //定位参数类
@@ -56,6 +61,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     private PoiSearch poiSearch;
 //    private Marker lastCheckMarker;
 //    private ArrayList<BitmapDescriptor> lastCheckedBitmapDescriptorList;
+    private ArrayList<Marker> markers;
     private PoiResult mPoiResult;
 //    private Poi
     //------------------------------------
@@ -63,8 +69,12 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     private MapView mapView;
     private AMap map;
     private GeocodeSearch geocodeSearch;
+    //
+    private PopupWindow popupWindow;
+    private View popupWindowView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("onCreate","1111111111111");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_location);
         mapView= (MapView) findViewById(R.id.map);
@@ -72,6 +82,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
         mapView.onCreate(savedInstanceState);//此方法必须重写
         initMap();
         //初始化point
+        markers=new ArrayList<Marker>();
         query = new PoiSearch.Query("停车场", "","");
         query.setPageSize(10);
         poiSearch = new PoiSearch(this, query);
@@ -91,13 +102,16 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     * */
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
+        Log.e("onLocationChanged",""+System.currentTimeMillis());
         if(locationChangedListener!=null&&aMapLocation!=null){
             if(locationClient!=null&&aMapLocation.getErrorCode()==0){//0表示定位成功
                 //显示系统小蓝点
-                locationChangedListener.onLocationChanged(aMapLocation);
-                //如果是第一次定位成功 就缩放到级别18，级别越高，越精准，但是18差不多已经是最大的了
+//                locationChangedListener.onLocationChanged(aMapLocation);
+                //如果是第一次定位成功 就缩放到级别12，级别越高，越精准，但是18差不多已经是最大的了
                 if (cLocation == 0) {
-                    map.moveCamera(CameraUpdateFactory.zoomTo(20));
+                    locationChangedListener.onLocationChanged(aMapLocation);
+                    Log.e("onLocationChanged",""+cLocation+"cLocation");
+                    map.moveCamera(CameraUpdateFactory.zoomTo(12));
                     //-----------------------point搜索模块--------------------------
                     ////keyWord表示搜索字符串，//第二个参数表示POI搜索类型，二者选填其一，
                     /// //cityCode表示POI搜索区域，可以是城市编码也可以是城市名称，也可以传空字符串，空字符串代表全国在全国范围内进行搜索
@@ -112,6 +126,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
                     //调用 PoiSearch 的 searchPOIAsyn() 方法发送请求。
                     poiSearch.searchPOIAsyn();
                     cLocation++;
+
                 }else {
                     //因为一开始的cLocation为0，之后不为0，如果不注释掉，会产生无法缩放的bug
 //                    map.moveCamera(CameraUpdateFactory.zoomTo(18));
@@ -135,13 +150,14 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
         //------------------------------------one---------------------------------------------------
     }
     private void initMap(){
+        Log.e("initMap","1111111111111");
         if(map==null){
             //实例化地图对象
             map=mapView.getMap();
             //不需要标记监听了
 //            map.setOnMarkerClickListener(this);
             //设置定位监听
-            map.setLocationSource((com.amap.api.maps2d.LocationSource) this);
+            map.setLocationSource(this);
             // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             map.setMyLocationEnabled(true);
             // 设置定位的类型为定位模式，有定位、跟随或地图根据面向方向旋转几种
@@ -156,7 +172,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
             //缩放按钮是提供给 App 端用户控制地图缩放级别的交换按钮，每次点击改变1个级别，此控件默认打开
             //可以通过以下方法控制其隐藏
             mUiSettings.setZoomControlsEnabled(true);
-//            map.setOnMapLongClickListener(this);
+            map.setOnMapLongClickListener(this);
         }
         //构造 GeocodeSearch 对象，并设置监听。
         geocodeSearch = new GeocodeSearch(this);
@@ -171,6 +187,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     * */
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
+        Log.e("activate","1111111111111");
         locationChangedListener=onLocationChangedListener;
         if(locationClient==null){
             //初始化定位
@@ -181,6 +198,8 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
             locationClient.setLocationListener(this);
             //设置为高精度定位模式
             locationClientOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            //设置发起定位请求时间间隔
+            locationClientOption.setInterval(5000);
             //设置定位参数
             locationClient.setLocationOption(locationClientOption);
 
@@ -192,6 +211,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     * */
     @Override
     public void deactivate() {
+        Log.e("deactivate","1111111111111");
         locationChangedListener = null;
         if (locationClient != null) {
             locationClient.stopLocation();
@@ -202,37 +222,39 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     /*
     * 长按地图的时候调用这个方法
     * */
-//    @Override
-//    public void onMapLongClick(LatLng latLng) {
-//        //获取经纬度
-//        zLatitude = latLng.latitude;
-//        zLongtitude = latLng.longitude;
-//        //用户自定义定位图标
-//        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_default);
-//        //初始化标注参数对象
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        //添加标注图片
-//        markerOptions.icon(bitmapDescriptor);
-//        //添加标注位置
-//        markerOptions.position(latLng);
-//        //如果是第一次长按点击，map对象就把添加该标注进入地图中，保证只有一个标注对象。
-//        if (cMapLongClick == 0) {
-//            marker = map.addMarker(markerOptions);
-//            cMapLongClick++;
-//        } else {
-//        }
-//        //设置标注位置
-//        marker.setPosition(latLng);
-//        // 长按时切换中心点
-//        map.animateCamera(CameraUpdateFactory.changeLatLng(latLng), 500, null);
-//        LatLonPoint latLonPoint = new LatLonPoint(zLatitude, zLongtitude);
-//        // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
-//        RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200, GeocodeSearch.AMAP);
-//        geocodeSearch.getFromLocationAsyn(query);// 设置异步逆地理编码请求
-//
-//    }
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        Log.e("onMapLongClick","1111111111111");
+        //获取经纬度
+        zLatitude = latLng.latitude;
+        zLongtitude = latLng.longitude;
+        //用户自定义定位图标
+        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_default);
+        //初始化标注参数对象
+        MarkerOptions markerOptions = new MarkerOptions();
+        //添加标注图片
+        markerOptions.icon(bitmapDescriptor);
+        //添加标注位置
+        markerOptions.position(latLng);
+        //如果是第一次长按点击，map对象就把添加该标注进入地图中，保证只有一个标注对象。
+        if (cMapLongClick == 0) {
+            marker = map.addMarker(markerOptions);
+            cMapLongClick++;
+        } else {
+        }
+        //设置标注位置
+        marker.setPosition(latLng);
+        // 长按时切换中心点
+        map.animateCamera(CameraUpdateFactory.changeLatLng(latLng), 500, null);
+        LatLonPoint latLonPoint = new LatLonPoint(zLatitude, zLongtitude);
+        // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+        RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200, GeocodeSearch.AMAP);
+        geocodeSearch.getFromLocationAsyn(query);// 设置异步逆地理编码请求
+
+    }
     @Override
     public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
+        Log.e("onRegeocodeSearched","1111111111111");
         if (i == AMapException.CODE_AMAP_SUCCESS) {
             if (regeocodeResult != null && regeocodeResult.getRegeocodeAddress() != null
                     && regeocodeResult.getRegeocodeAddress().getFormatAddress() != null) {
@@ -295,17 +317,51 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     //onPonitSearchListener
     @Override
     public void onPoiSearched(PoiResult poiResult, int code) {
+        Log.e("onPoiSearched","1111111111111");
         //v3.2.1及以上版本SDK 返回码i==1000是正常
         if(code==1000&&poiResult!=null&&poiResult.getQuery()!=null){
+            double markerLatitude;
+            double markerLongtitude;
+            LatLng markerLatLng;
+            Marker poiMarker;
+            //定义poi的marker图标。
+            BitmapDescriptor descriptor=BitmapDescriptorFactory.fromResource(R.mipmap.red);
+            //初始化poi的marker参数对象
+            MarkerOptions markerOptions=new MarkerOptions();
+            markerOptions.icon(descriptor);
             mPoiResult=poiResult;
             //poi结果的页数
 //            int resultPageCount=mPoiResult.getPageCount();
             ArrayList<PoiItem> pois=poiResult.getPois();
             if(pois!=null&&pois.size()>0){
-                PoiOverlay poiOverlay=new PoiOverlay(map,pois);
-                poiOverlay.removeFromMap();
-                poiOverlay.addToMap();
-                poiOverlay.zoomToSpan();
+                //保证marker不重复添加，每次获得的poi后都重新设置markers容器
+                if(!markers.isEmpty()){
+                    markers.clear();
+                }
+//                PoiOverlay poiOverlay=new PoiOverlay(map,pois);
+//                poiOverlay.removeFromMap();
+//                poiOverlay.addToMap();
+//                poiOverlay.zoomToSpan();
+                for (int i=0;i<pois.size();i++){
+                    PoiItem poiItem=pois.get(i);
+                    LatLonPoint latLonPoint=poiItem.getLatLonPoint();
+                    markerLatitude=latLonPoint.getLatitude();
+                    markerLongtitude=latLonPoint.getLongitude();
+                    markerLatLng=new LatLng(markerLatitude,markerLongtitude);
+                    markerOptions.position(markerLatLng);
+                    poiMarker=map.addMarker(markerOptions);
+                    poiMarker.setPosition(markerLatLng);
+                    poiMarker.setTitle(poiItem.getTitle());
+                    poiMarker.setSnippet(poiItem.getCityName()+poiItem.getAdName()+poiItem.getSnippet()+"\n"+"停车场类型:"+poiItem.getParkingType());
+                    //第一次获取到查询结果的时候，移动中心点到该地区
+                    if(i==0){
+                        map.animateCamera(CameraUpdateFactory.changeLatLng(markerLatLng), 500, null);
+                    }
+//                    RegeocodeQuery regeocodeQuery=new RegeocodeQuery(latLonPoint,200,GeocodeSearch.AMAP);
+//                    geocodeSearch.getFromLocationAsyn(regeocodeQuery);// 设置异步逆地理编码请求
+                    markers.add(poiMarker);
+                }
+
             }
         }
     }
@@ -316,34 +372,45 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     }
 
     @Override
-    public void onMapLongClick(com.amap.api.maps2d.model.LatLng latLng) {
-                //获取经纬度
-        zLatitude = latLng.latitude;
-        zLongtitude = latLng.longitude;
-        //用户自定义定位图标
-        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_default);
-        //初始化标注参数对象
-        MarkerOptions markerOptions = new MarkerOptions();
-        //添加标注图片
-        markerOptions.icon(bitmapDescriptor);
-        //添加标注位置
-        markerOptions.position(latLng);
-        //如果是第一次长按点击，map对象就把添加该标注进入地图中，保证只有一个标注对象。
-        if (cMapLongClick == 0) {
-            marker = map.addMarker(markerOptions);
-            cMapLongClick++;
-        } else {
-        }
-        //设置标注位置
-        marker.setPosition(latLng);
-        // 长按时切换中心点
-        map.animateCamera(CameraUpdateFactory.changeLatLng(latLng), 500, null);
-        LatLonPoint latLonPoint = new LatLonPoint(zLatitude, zLongtitude);
-        // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
-        RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200, GeocodeSearch.AMAP);
-        geocodeSearch.getFromLocationAsyn(query);// 设置异步逆地理编码请求
-
+    public boolean onMarkerClick(Marker marker) {
+        showPopupWindows();
+        return false;
     }
+    private void showPopupWindows(){
+        if(popupWindow==null){
+            LayoutInflater layoutInflater=getLayoutInflater();
+            popupWindowView=View.inflate(getApplicationContext(),R.layout.layout_popupwindow,null);
+        }
+    }
+//    @Override
+//    public void onMapLongClick(com.amap.api.maps.model.LatLng latLng) {
+//                //获取经纬度
+//        zLatitude = latLng.latitude;
+//        zLongtitude = latLng.longitude;
+//        //用户自定义定位图标
+//        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_default);
+//        //初始化标注参数对象
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        //添加标注图片
+//        markerOptions.icon(bitmapDescriptor);
+//        //添加标注位置
+//        markerOptions.position(latLng);
+//        //如果是第一次长按点击，map对象就把添加该标注进入地图中，保证只有一个标注对象。
+//        if (cMapLongClick == 0) {
+//            marker = map.addMarker(markerOptions);
+//            cMapLongClick++;
+//        } else {
+//        }
+//        //设置标注位置
+//        marker.setPosition(latLng);
+//        // 长按时切换中心点
+//        map.animateCamera(CameraUpdateFactory.changeLatLng(latLng), 500, null);
+//        LatLonPoint latLonPoint = new LatLonPoint(zLatitude, zLongtitude);
+//        // 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+//        RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200, GeocodeSearch.AMAP);
+//        geocodeSearch.getFromLocationAsyn(query);// 设置异步逆地理编码请求
+//
+//    }
     //用户点击Marker时，恢复上一个Marker的图标&&设置当前Marker的图标
 //    @Override
 //    public boolean onMarkerClick(Marker marker) {
