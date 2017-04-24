@@ -95,6 +95,23 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         myRecyclerViewAdapter=new MyRecyclerViewAdapter(parkInfos);
+        myRecyclerViewAdapter.setRecyclerViewOnitemClickListener(new MyRecyclerViewAdapter.RecyclerViewOnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                TextView textView= (TextView) view.findViewById(R.id.tv_parkname);
+                String parkName=textView.getText().toString();
+                if(parkName!=null) {
+                    Toast.makeText(getApplicationContext(),parkName,Toast.LENGTH_LONG).show();
+                    Bundle bundle=new Bundle();
+                    bundle.putString("parkName",parkName);
+                    Intent intent=new Intent(MainActivity.this,LocationActivity.class);
+                    intent.putExtra("bundle",bundle);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(getApplicationContext(),"parkNameIsNULL",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         recyclerView.setAdapter(myRecyclerViewAdapter);
         //
     }
@@ -104,11 +121,14 @@ public class MainActivity extends AppCompatActivity {
 
     static class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MYViewHolder>{
         private ArrayList<ParkInfo> parkInfos;
-        private RecyclerViewOnitemClickListener recyclerViewOnitemClickListener;
+        public RecyclerViewOnItemClickListener recyclerViewOnitemClickListener;
         public MyRecyclerViewAdapter(ArrayList<ParkInfo> Infos) {
             this.parkInfos = Infos;
         }
-        public interface RecyclerViewOnitemClickListener{
+        public void setRecyclerViewOnitemClickListener(RecyclerViewOnItemClickListener listener){
+           this.recyclerViewOnitemClickListener=listener;
+        }
+        public interface RecyclerViewOnItemClickListener{
             void onItemClick(View vie,int position);
         }
         @Override

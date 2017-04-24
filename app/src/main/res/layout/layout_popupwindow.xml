@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-</LinearLayout>
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    >
+    <TextView
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/xiaobiaoti"
+        android:text="111111111"
+        android:id="@+id/tv_title"
+        />
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="18dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/tipsize"
+        android:text="11111111"
+        android:layout_below="@+id/tv_title"
+        android:id="@+id/tv_tips"
+        android:layout_marginBottom="8dp"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_navi"
+        android:layout_below="@id/tv_tips"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
+        android:text="导航"
+        android:textColor="#ffffff"
+        android:background="@color/colorPrimary"
+        android:textSize="@dimen/buttonsize"
+        />
+</RelativeLayout>

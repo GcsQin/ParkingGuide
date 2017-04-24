@@ -1,12 +1,19 @@
 package com.parking.parkingguide;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.amap.api.location.AMapLocation;
@@ -38,7 +45,7 @@ import com.amap.api.services.poisearch.PoiSearch;
 
 import java.util.ArrayList;
 
-public class LocationActivity extends AppCompatActivity implements LocationSource,AMapLocationListener,
+public class LocationActivity extends AppCompatActivity implements View.OnClickListener,LocationSource,AMapLocationListener,
          AMap.OnMapLongClickListener,GeocodeSearch.OnGeocodeSearchListener ,PoiSearch.OnPoiSearchListener,AMap.OnMarkerClickListener{
     //定位服务类
     private AMapLocationClient locationClient = null;
@@ -72,11 +79,19 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     //
     private PopupWindow popupWindow;
     private View popupWindowView;
+    private TextView tvPopTitle,tvPopTips;
+    private Button btnPopNavi;
+    private String searchInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("onCreate","1111111111111");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_location);
+        Intent intent=getIntent();
+        Bundle bundle=intent.getBundleExtra("bundle");
+        if(bundle!=null){
+            searchInfo=bundle.getString("parkName");
+        }
         mapView= (MapView) findViewById(R.id.map);
 //        在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mapView.onCreate(savedInstanceState);//此方法必须重写
@@ -102,7 +117,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     * */
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        Log.e("onLocationChanged",""+System.currentTimeMillis());
+//        Log.e("onLocationChanged",""+System.currentTimeMillis());
         if(locationChangedListener!=null&&aMapLocation!=null){
             if(locationClient!=null&&aMapLocation.getErrorCode()==0){//0表示定位成功
                 //显示系统小蓝点
@@ -155,7 +170,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
             //实例化地图对象
             map=mapView.getMap();
             //不需要标记监听了
-//            map.setOnMarkerClickListener(this);
+            map.setOnMarkerClickListener(this);
             //设置定位监听
             map.setLocationSource(this);
             // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
@@ -224,7 +239,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     * */
     @Override
     public void onMapLongClick(LatLng latLng) {
-        Log.e("onMapLongClick","1111111111111");
+//        Log.e("onMapLongClick","1111111111111");
         //获取经纬度
         zLatitude = latLng.latitude;
         zLongtitude = latLng.longitude;
@@ -254,7 +269,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
     }
     @Override
     public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
-        Log.e("onRegeocodeSearched","1111111111111");
+//        Log.e("onRegeocodeSearched","1111111111111");
         if (i == AMapException.CODE_AMAP_SUCCESS) {
             if (regeocodeResult != null && regeocodeResult.getRegeocodeAddress() != null
                     && regeocodeResult.getRegeocodeAddress().getFormatAddress() != null) {
@@ -357,6 +372,7 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
                     if(i==0){
                         map.animateCamera(CameraUpdateFactory.changeLatLng(markerLatLng), 500, null);
                     }
+
 //                    RegeocodeQuery regeocodeQuery=new RegeocodeQuery(latLonPoint,200,GeocodeSearch.AMAP);
 //                    geocodeSearch.getFromLocationAsyn(regeocodeQuery);// 设置异步逆地理编码请求
                     markers.add(poiMarker);
@@ -373,13 +389,48 @@ public class LocationActivity extends AppCompatActivity implements LocationSourc
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        showPopupWindows();
+        String title=marker.getTitle();
+        String msg=marker.getSnippet();
+        Log.e("onMarkerClick",title+msg);
+//        if(!title.isEmpty()&&!msg.isEmpty()){
+            showPopupWindows(title,msg);
+//        }
         return false;
     }
-    private void showPopupWindows(){
-        if(popupWindow==null){
-            LayoutInflater layoutInflater=getLayoutInflater();
-            popupWindowView=View.inflate(getApplicationContext(),R.layout.layout_popupwindow,null);
+    private void showPopupWindows(String title,String msg){
+        if(popupWindow==null) {
+            LayoutInflater layoutInflater = getLayoutInflater();
+            popupWindowView = layoutInflater.inflate(R.layout.layout_popupwindow, null);
+            tvPopTitle = (TextView) popupWindowView.findViewById(R.id.tv_title);
+            tvPopTips = (TextView) popupWindowView.findViewById(R.id.tv_tips);
+            btnPopNavi = (Button) popupWindowView.findViewById(R.id.btn_navi);
+            tvPopTitle.setText(title);
+            tvPopTips.setText(msg);
+            btnPopNavi.setOnClickListener(this);
+            popupWindow = new PopupWindow(popupWindowView, ViewGroup.LayoutParams.MATCH_PARENT
+                    , ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+            //使其聚焦
+            popupWindow.setFocusable(true);
+            popupWindow.setTouchable(true);
+            //设置动画
+            popupWindow.setAnimationStyle(R.style.PopupWindowsAnimation);
+            //设置允许在外点击小时
+            popupWindow.setOutsideTouchable(true);
+            popupWindow.setBackgroundDrawable(new BitmapDrawable());
+            popupWindow.showAtLocation(popupWindowView, Gravity.BOTTOM,0,0);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.btn_navi:
+                Toast.makeText(getApplicationContext(),"导航",Toast.LENGTH_SHORT).show();
+                if(popupWindow!=null){
+                    popupWindow.dismiss();
+                }
+                break;
         }
     }
 //    @Override

@@ -16,5 +16,9 @@
     <style name="AppTheme.DrawerArrowToggle" parent="Base.Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@android:color/white</item>
     </style>
+    <style name="PopupWindowsAnimation">
+        <item name="android:windowEnterAnimation">@anim/anim_popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/anim_popup_hide</item>
+    </style>
 
 </resources>
