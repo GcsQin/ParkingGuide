@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="赛程1名称"
+        android:id="@+id/tv_fb01"
+        />
+    <ListView
+        android:layout_below="@+id/tv_fb01"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/lv_fb01"
+        >
+    </ListView>
+    <TextView
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/lv_fb01"
+        android:id="@+id/tv_fb02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="赛程2名称"
+        />
+    <ListView
+        android:layout_below="@+id/tv_fb02"
+        android:layout_width="match_parent"
+        android:id="@+id/lv_fb02"
+        android:layout_height="200dp">
+    </ListView>
+</RelativeLayout>

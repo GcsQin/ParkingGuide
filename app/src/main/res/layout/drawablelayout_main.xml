@@ -4,7 +4,6 @@
     android:id="@+id/dlMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <LinearLayout
         android:id="@+id/llContent"
         android:layout_width="match_parent"
@@ -37,9 +36,7 @@
                 />
         </RelativeLayout>
     </LinearLayout>
-
     <!--android:layout_gravity="start"属性使这部分作为侧滑部分-->
-    <!--一定要放在下面！！！关于控件的层次性如果不知道的同学去百度！哦不去谷歌-->
     <LinearLayout
         android:id="@+id/llMenu"
         android:layout_width="match_parent"
@@ -47,19 +44,93 @@
         android:layout_gravity="start"
         android:background="@color/colorWhite"
         android:orientation="vertical">
-
         <!--用于设置菜单项-->
-        <!--<ListView-->
-            <!--android:id="@+id/lvMenu"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:divider="@null" />-->
-        <TextView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="左侧菜单"
-            android:id="@+id/test"
-            />
+            android:background="#0078D7"
+            >
+            <TextView
+                android:textColor="#ffffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/appbarsize"
+                android:id="@+id/tv_wtCity"
+                android:layout_centerHorizontal="true"
+                android:text="北京市"
+                />
+            <TextView
+                android:textColor="#ffffff"
+                android:layout_below="@+id/tv_wtCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_wtTime"
+                android:text="2017年4月27日"
+                android:layout_marginLeft="16dp"
+                />
+            <TextView
+                android:textColor="#ffffff"
+                android:layout_below="@+id/tv_wtTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/appbarsize"
+                android:id="@+id/tv_wtStatu"
+                android:layout_marginLeft="16dp"
+                android:text="多云"
+                />
+             <TextView
+                 android:textColor="#ffffff"
+                 android:layout_toRightOf="@+id/tv_wtStatu"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_marginLeft="50dp"
+                 android:textSize="@dimen/appbarsize"
+                 android:id="@+id/tv_wtTemp"
+                 android:layout_alignTop="@+id/tv_wtStatu"
+                 android:text="-7"
+                 />
+            <TextView
+                android:textColor="#ffffff"
+                android:layout_marginLeft="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_wtWindyDire"
+                android:text="西北风"
+                android:layout_below="@+id/tv_wtStatu"
+                />
+            <TextView
+                android:textColor="#ffffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_wtWindyDire"
+                android:id="@+id/tv_wtWindyPower"
+                android:layout_below="@+id/tv_wtStatu"
+                android:text="7级"
+                />
+            <TextView
+                android:textColor="#ffffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="湿度"
+                android:layout_marginLeft="16dp"
+                android:layout_below="@+id/tv_wtWindyPower"
+                android:id="@+id/tv_wtHumiditext"
+                />
+            <TextView
+                android:layout_below="@+id/tv_wtWindyPower"
+                android:textColor="#ffffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv_wtHumiditext"
+                android:id="@+id/tv_wtHumidi"
+                android:text="34%"
+                />
+        </RelativeLayout>
+        <ListView
+            android:id="@+id/lvMenu"
+            android:background="#548ED4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null" />
     </LinearLayout>
-
 </android.support.v4.widget.DrawerLayout>

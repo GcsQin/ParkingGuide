@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="8dp"
+    >
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:id="@+id/img_header_recyclerview"
+        android:src="@drawable/nopicture"
+        android:scaleType="fitXY"
+        />
+    <TextView
+        android:id="@+id/tv_header_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textColor="#ffffff"
+        android:text="感应故事|河南安阳　韩书贞往生记"
+        android:layout_alignBottom="@+id/img_header_recyclerview"
+        android:background="#ff646464"
+        />
+</RelativeLayout>

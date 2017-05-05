@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:background="#2B2B2B"
+    >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_fbi_time"
+        android:text="04-29周六 22:00"
+        />
+    <TextView
+        android:id="@+id/tv_fbi_t2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="南安普敦"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="60dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_fbi_result"
+        android:text="0:0"
+        android:layout_toLeftOf="@+id/tv_fbi_t2"
+        android:layout_marginRight="6dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="切尔西"
+        android:layout_toLeftOf="@+id/tv_fbi_result"
+        android:layout_marginRight="6dp"
+        android:id="@+id/tv_fbi_t1"
+        />
+</RelativeLayout>

@@ -14,7 +14,7 @@
         android:id="@+id/tv_title"
         />
     <TextView
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="2dp"
         android:layout_marginLeft="18dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,11 +24,21 @@
         android:id="@+id/tv_tips"
         android:layout_marginBottom="8dp"
         />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/img_navi"
+        android:layout_below="@id/tv_tips"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="2dp"
+        android:scaleType="fitXY"
+        />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btn_navi"
-        android:layout_below="@id/tv_tips"
+        android:layout_below="@+id/img_navi"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="10dp"

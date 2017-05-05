@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_map"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
         <com.amap.api.maps.MapView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/map"
+            android:focusableInTouchMode="true"
             ></com.amap.api.maps.MapView>
-
-</LinearLayout>
+                <!--<EditText-->
+                    <!--android:layout_marginLeft="16dp"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/et_searchpoi"-->
+                    <!--style="@style/Widget.AppCompat.EditText"-->
+                    <!--android:layout_marginTop="16dp"-->
+                    <!--android:layout_marginRight="16dp"-->
+                <!--/>-->
+                <!--<Button-->
+                    <!--android:layout_below="@+id/et_searchpoi"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_marginRight="16dp"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="搜索"-->
+                    <!--/>-->
+</RelativeLayout>

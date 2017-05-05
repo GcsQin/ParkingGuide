@@ -39,17 +39,18 @@ public class ExcelUtils {
     public void readExcelToDB(Context context){
         SQLiteDatabase sqLiteDatabase=parkSQLOpenHelper.getReadableDatabase();
         Cursor cursor=sqLiteDatabase.query("parkInfo",null,null,null,null,null,null);
-        int count=cursor.getCount();
 //        判断是否已经将excel的数据保存在数据库，如果没有保存，就将数据保存在数据库中，为了避免重复添加，
 //        所以每次添加前先都要先将数据库清空。
         SharedPreferences sharedPreferences=context.getSharedPreferences("excel",Context.MODE_PRIVATE);
-        Boolean config=sharedPreferences.getBoolean("readExcel",false);
-        if(config&&count<=0){//如果没有保存过而且数据库parkInfo表的内容为空
+        Boolean noConfig=sharedPreferences.getBoolean("readExcel",true);//默认是没有保存过
+        Log.e("readExcelToDB",noConfig+"-----config---------");
+        if(noConfig){//如果没有保存过而且数据库parkInfo表的内容为空
             try {
                 InputStream inputStream=context.getAssets().open("data.xls");
                 Workbook workbook=Workbook.getWorkbook(inputStream);
                 Sheet sheet=workbook.getSheet(0);
                 int rows=sheet.getRows();
+                Log.e("readExcelToDB",rows+"-------rows-------");
                 ParkInfo parkInfo=null;
                 for(int i=0;i<rows;i++){
                     String area=(sheet.getCell(0,i)).getContents();
@@ -64,6 +65,7 @@ public class ExcelUtils {
                     Log.e("ExcelUtils",parkInfo.toString());
                     parkDatabase.saveParkInfo(parkInfo);
                 }
+                sharedPreferences.edit().putBoolean("readExcel",false).commit();
             } catch (Exception e) {
                 e.printStackTrace();
             }

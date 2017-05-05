@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_happy_num"
+        android:textColor="#000000"
+        android:textSize="@dimen/appbarsize"
+        android:text="笑话1"
+        />
+    <TextView
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_below="@+id/tv_happy_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_happy_content"
+        android:text="今天愚人节，一男带同事回家吃饭。 在老婆快下班的时候，决定让同事藏在衣柜了，逗一下老婆。 不一会老婆回来了，打开衣柜打算换衣服，立马愣住了说：“老王，你藏在这里干什么？” 老公彻底愣了，她叫他老王…"
+        />
+</RelativeLayout>

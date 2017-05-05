@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_his_data"
+        android:text="1519年5月2日"
+        android:textSize="@dimen/bigtitlesize"
+        />
+    <TextView
+        android:layout_toRightOf="@+id/tv_his_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_his_lunar"
+        android:text="己卯年四月初四"
+        android:textSize="@dimen/appbarsize"
+        android:layout_marginLeft="16dp"
+        android:layout_alignBottom="@+id/tv_his_data"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_his_title"
+        android:text="英国宪章运动爆发"
+        android:layout_below="@+id/tv_his_data"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_his_des"
+        android:layout_below="@+id/tv_his_title"
+        android:text="在175年前的今天，1842年5月2日 (农历三月廿二)，英国宪章运动爆发."
+        />
+</RelativeLayout>

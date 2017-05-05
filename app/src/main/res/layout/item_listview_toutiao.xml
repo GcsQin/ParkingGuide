@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginTop="16dp"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/smalltitlesize"
+        android:textColor="#000000"
+        android:id="@+id/tv_toutiao_title"
+        android:layout_marginBottom="2dp"
+        android:text="若遇到阳后双阴阳的股票，果断重仓跟进，庄家抬轿直线飙升"
+        />
+    <ImageView
+        android:layout_below="@+id/tv_toutiao_title"
+        android:layout_width="120dp"
+        android:layout_height="75dp"
+        android:scaleType="fitXY"
+        android:id="@+id/iv_toutiao_img"
+        />
+    <TextView
+        android:textColor="#999999"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_toutiao_time"
+        android:text="2017-04-29 11:25"
+        android:layout_toRightOf="@+id/iv_toutiao_img"
+        android:layout_below="@+id/tv_toutiao_title"
+        />
+    <TextView
+        android:textColor="#999999"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_toutiao_author"
+        android:text="三韩观察家"
+        android:layout_below="@+id/tv_toutiao_time"
+        android:layout_toRightOf="@+id/iv_toutiao_img"
+        />
+</RelativeLayout>
