@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -54,6 +55,7 @@ import com.amap.api.services.poisearch.Photo;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.bumptech.glide.Glide;
+import com.parking.parkingguide.utils.ToastUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,6 +87,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     //poi
     private PoiSearch.Query query;
     private PoiSearch poiSearch;
+    private String cityCode;
     //    private Marker lastCheckMarker;
 //    private ArrayList<BitmapDescriptor> lastCheckedBitmapDescriptorList;
     private ArrayList<Marker> markers;
@@ -98,7 +101,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private PopupWindow popupWindow;
     private View popupWindowView;
     private TextView tvPopTitle, tvPopTips;
-    private Button btnPopNavi;
+    private Button btnPopNavi,btnPopNaviVirtual;
     private String searchInfo;
     private ImageView imgPopNavi;
     //跳转导航页面传递当前经纬度
@@ -106,6 +109,8 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private double naviStartLongtitude;
     private double naviEndLatitude;
     private double naviEndLongtittude;
+    //
+    EditText editText;
     //-------------------------------------------------------
     protected String[] needPermissions = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -129,6 +134,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             searchInfo = bundle.getString("parkName");
         }
         mapView = (MapView) findViewById(R.id.map);
+        editText= (EditText) findViewById(R.id.et_searchpoi);
 //        在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mapView.onCreate(savedInstanceState);//此方法必须重写
         initMap();
@@ -144,7 +150,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     * */
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        Log.e("onLocationChanged", "" + System.currentTimeMillis() + "=====aMapLocation0" + aMapLocation.getErrorCode());
+//        Log.e("onLocationChanged", "" + System.currentTimeMillis() + "=====aMapLocation0" + aMapLocation.getErrorCode());
         if (locationChangedListener != null && aMapLocation != null) {
             if (locationClient != null && aMapLocation.getErrorCode() == 0) {//0表示定位成功
                 //显示系统小蓝点
@@ -160,6 +166,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                     ////keyWord表示搜索字符串，//第二个参数表示POI搜索类型，二者选填其一，
                     /// //cityCode表示POI搜索区域，可以是城市编码也可以是城市名称，也可以传空字符串，空字符串代表全国在全国范围内进行搜索
                     query = new PoiSearch.Query(searchInfo, "", aMapLocation.getCityCode());
+                    cityCode=aMapLocation.getCityCode();
                     // 设置每页最多返回多少条poiitem
                     query.setPageSize(10);
                     //设置查询页码
@@ -178,7 +185,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                 } else {
                     //因为一开始的cLocation为0，之后不为0，如果不注释掉，会产生无法缩放的bug
 //                    map.moveCamera(CameraUpdateFactory.zoomTo(18));
-                    Log.e("LocationActivity", "定位失败" + aMapLocation.getErrorCode());
+//                    Log.e("LocationActivity", "定位失败" + aMapLocation.getErrorCode());
                 }
             }
         }
@@ -384,6 +391,11 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             if (pois != null && pois.size() > 0) {
                 //保证marker不重复添加，每次获得的poi后都重新设置markers容器
                 if (!markers.isEmpty()) {
+                    for(int m=0;m<markers.size();m++){
+                        markers.get(m).remove();
+                        markers.get(m).destroy();
+//                        markers.remove(m);
+                    }
                     markers.clear();
                 }
                 for (int i = 0; i < pois.size(); i++) {
@@ -398,6 +410,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                     poiMarker.setPosition(markerLatLng);
                     poiMarker.setTitle(poiItem.getTitle());
                     poiMarker.setSnippet(poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet() + "\n" + "停车场类型:" + poiItem.getParkingType());
+                    Log.e("LocationActivity",poiItem.getCityName() + poiItem.getAdName() + poiItem.getSnippet());
                     //第一次获取到查询结果的时候，移动中心点到该地区
                     if (i == 0) {
                         map.animateCamera(CameraUpdateFactory.changeLatLng(markerLatLng), 500, null);
@@ -425,9 +438,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         naviEndLatitude = marker.getOptions().getPosition().latitude;
         naviEndLongtittude = marker.getOptions().getPosition().longitude;
         Log.e("onMarkerClick", title + msg);
-//        if(!title.isEmpty()&&!msg.isEmpty()){
         showPopupWindows(title, msg);
-//        }
         return false;
     }
 
@@ -438,6 +449,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             tvPopTitle = (TextView) popupWindowView.findViewById(R.id.tv_title);
             tvPopTips = (TextView) popupWindowView.findViewById(R.id.tv_tips);
             btnPopNavi = (Button) popupWindowView.findViewById(R.id.btn_navi);
+            btnPopNaviVirtual= (Button) popupWindowView.findViewById(R.id.btn_navi_virtual);
             imgPopNavi = (ImageView) popupWindowView.findViewById(R.id.img_navi);
             tvPopTitle.setText(title);
             tvPopTips.setText(msg);
@@ -449,8 +461,17 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                         R.drawable.nopicture).into(imgPopNavi);
             }
             btnPopNavi.setOnClickListener(this);
+            btnPopNaviVirtual.setOnClickListener(this);
             popupWindow = new PopupWindow(popupWindowView, ViewGroup.LayoutParams.MATCH_PARENT
                     , ViewGroup.LayoutParams.WRAP_CONTENT);
+        }else {
+            tvPopTitle.setText(title);
+            tvPopTips.setText(msg);
+            if(poiPhoto.size()!=0){
+                Photo photo = poiPhoto.get(0);
+                Glide.with(this).load(photo.getUrl()).placeholder(R.drawable.pictureloading).error(
+                        R.drawable.nopicture).into(imgPopNavi);
+            }
         }
         //使其聚焦
         popupWindow.setFocusable(true);
@@ -475,8 +496,24 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                 bundle.putDouble("startlong", naviStartLongtitude);
                 bundle.putDouble("endlat", naviEndLatitude);
                 bundle.putDouble("endlong", naviEndLongtittude);
+                bundle.putInt("type",0);
                 intent.putExtra("bundle", bundle);
                 startActivity(intent);
+                if (popupWindow != null) {
+                    popupWindow.dismiss();
+                }
+                break;
+            case R.id.btn_navi_virtual:
+                ToastUtils.showToastShort(getApplicationContext(),"模拟导航页面");
+                Intent intentV = new Intent(LocationActivity.this, NaviActivity.class);
+                Bundle bundleV = new Bundle();
+                bundleV.putDouble("startlat", naviStartLatitude);
+                bundleV.putDouble("startlong", naviStartLongtitude);
+                bundleV.putDouble("endlat", naviEndLatitude);
+                bundleV.putDouble("endlong", naviEndLongtittude);
+                bundleV.putInt("type",1);
+                intentV.putExtra("bundle", bundleV);
+                startActivity(intentV);
                 if (popupWindow != null) {
                     popupWindow.dismiss();
                 }
@@ -558,6 +595,23 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         return  true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+    //---------------------------------------------------------
+    public void searchParkByKey(View view){
+        String key=editText.getText().toString();
+        if(key.isEmpty()){
+            ToastUtils.showToastShort(getApplicationContext(),"输入内容不能为空");
+        }else{
+            if(!key.contains("停车场")){
+                key=key.concat("停车场");
+            }
+            query=new PoiSearch.Query(key,"",cityCode);
+            query.setPageSize(10);
+            query.setPageNum(0);
+            poiSearch=new PoiSearch(getApplicationContext(),query);
+            poiSearch.setOnPoiSearchListener(this);
+            poiSearch.searchPOIAsyn();
+        }
     }
 }
 

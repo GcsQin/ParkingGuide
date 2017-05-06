@@ -41,6 +41,7 @@ public class NaviActivity extends AppCompatActivity  implements AMapNaviViewList
     private AMapNavi mAMapNavi;
     private NaviLatLng mEndLatlng;
     private NaviLatLng mStartLatlng;
+    private int naviType;
     private final List<NaviLatLng> sList = new ArrayList<NaviLatLng>();
     private final List<NaviLatLng> eList = new ArrayList<NaviLatLng>();
     //最多支持设置 4 个途经点坐标
@@ -55,6 +56,7 @@ public class NaviActivity extends AppCompatActivity  implements AMapNaviViewList
         double startLong=bundle.getDouble("startlong");
         double endLat=bundle.getDouble("endlat");
         double endLong=bundle.getDouble("endlong");
+        naviType=bundle.getInt("type");//如果typeNavi的值是0，就是实时导航，否则就是模拟导航。
         Log.e("NaviActivity",startLat+"__"+startLong+"----"+endLat+"__"+endLong);
         mStartLatlng = new NaviLatLng(startLat,startLong);
         mEndLatlng =new NaviLatLng(endLat,endLong);
@@ -200,8 +202,13 @@ public class NaviActivity extends AppCompatActivity  implements AMapNaviViewList
     //当AmapNavi计算路线成功后会调用此方法
     @Override
     public void onCalculateRouteSuccess() {
-        Log.e("onCalculateRouteSuccess","-------------");
-        mAMapNavi.startNavi(NaviType.GPS);
+        if(naviType==0){
+            Log.e("onCalculateRouteSuccess","----GPS--------");
+            mAMapNavi.startNavi(NaviType.GPS);
+        }else {
+            mAMapNavi.startNavi(NaviType.EMULATOR);
+            Log.e("onCalculateRouteSuccess","----EMULATOR---------");
+        }
     }
     //当AmapNavi计算路线失败后会调用此方法
     @Override
@@ -213,6 +220,7 @@ public class NaviActivity extends AppCompatActivity  implements AMapNaviViewList
                 break;
             case 1:
                 showToast("路径计算成功");
+                Log.e("NaviActivity","路径计算成功");
                 break;
             case 2:
                 showToast("网络超时或网络失败,请检查网络是否通畅，如网络没问题,查看Logcat输出是否出现鉴权错误信息，如有，说明SHA1与KEY不对应导致");
@@ -367,7 +375,6 @@ public class NaviActivity extends AppCompatActivity  implements AMapNaviViewList
 //--------------------------------------------------------------------------------------------------
     @Override
     protected void onResume() {
-        Log.e("onResume","不要改需求");
         super.onResume();
         mAMapNaviView.onResume();
     }
@@ -376,13 +383,11 @@ public class NaviActivity extends AppCompatActivity  implements AMapNaviViewList
     protected void onDestroy() {
         super.onDestroy();
         mAMapNaviView.onDestroy();
-        Log.e("onDestroy","不要改需求");
         mAMapNavi.stopNavi();
         mAMapNavi.destroy();
     }
     @Override
     protected void onPause() {
-        Log.e("onPause","不要改需求");
         super.onPause();
         mAMapNaviView.onPause();
     }
